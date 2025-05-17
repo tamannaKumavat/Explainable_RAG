@@ -1,6 +1,3 @@
-__import__('sqlite3')
-import sys
-# sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import nltk
 nltk.download('punkt')
 
@@ -9,10 +6,9 @@ from ocr import extract_text_from_pdf
 from chunking import chunk_text_fixed_size, chunk_text_by_sentence
 from retrieval import index_chunks, retrieve_similar_chunks
 from tsne import get_embeddings, plot_tsne
-from constants import CHROMADB_DIR, OPENAI_API_KEY, EMBEDDING_MODEL, EMBEDDING_DIMENSIONS
+from constants import OPENAI_API_KEY, EMBEDDING_MODEL, EMBEDDING_DIMENSIONS
 import openai
 import os
-import chromadb
 
 openai.api_key = OPENAI_API_KEY
 
@@ -21,7 +17,10 @@ def render_about_section():
     """Render the About section."""
     st.title("About This App")
     st.subheader("Interpretable Retrieval-Augmented Generation (RAG) Web App")
-    st.write("This web app is designed to process text data from uploaded PDF files, chunk it, and use state-of-the-art AI models for retrieval and response generation interpretable.")
+    st.write(
+        "This web app is designed to process text data from uploaded PDF files, chunk it, "
+        "and use state-of-the-art AI models for retrieval and response generation interpretable."
+    )
     markdown_file_path = "about.md"  # Path to your Markdown file
     if os.path.exists(markdown_file_path):
         with open(markdown_file_path, "r") as file:
@@ -53,7 +52,6 @@ def render_tool_section():
     # File uploader
     uploaded_file = st.file_uploader("Upload a PDF file", type=["pdf"])
     if uploaded_file is not None:
-        client = chromadb.PersistentClient(path=CHROMADB_DIR)
         pdf_path = "uploaded.pdf"
         with open(pdf_path, "wb") as f:
             f.write(uploaded_file.getbuffer())
@@ -65,7 +63,9 @@ def render_tool_section():
 
         # Chunking options
         st.subheader("Chunking Options")
-        chunking_option = st.selectbox("Select Chunking Technique", ["Fixed Size", "By Sentence"])
+        chunking_option = st.selectbox(
+            "Select Chunking Technique", ["Fixed Size", "By Sentence"]
+        )
         if chunking_option == "Fixed Size":
             chunk_size = st.number_input(
                 "Chunk Size (words)", min_value=100, max_value=1000, value=500
@@ -79,7 +79,7 @@ def render_tool_section():
 
         st.write(f"Number of Chunks: {len(chunks)}")
 
-        # Index chunks
+        # Index chunks using FAISS
         with st.spinner("Indexing chunks..."):
             index_chunks(chunks)
 
@@ -87,9 +87,11 @@ def render_tool_section():
         st.subheader("Query")
         query = st.text_input("Enter your query")
         if query:
-            # Retrieve similar chunks
+            # Retrieve similar chunks using FAISS
             with st.spinner("Retrieving similar chunks..."):
-                retrieved_chunks, retrieved_indices = retrieve_similar_chunks(query)
+                results = retrieve_similar_chunks(query)
+                retrieved_chunks = [chunk for chunk, meta in results]
+                retrieved_indices = list(range(len(retrieved_chunks)))
 
             if show_chunks_and_tsne:
                 st.subheader("Retrieved Chunks")
@@ -124,8 +126,8 @@ def render_tool_section():
                     num_chunks = len(chunks)
                     query_index = num_chunks
                     response_index = num_chunks + 1
-                    retrieved_indices = [int(idx) for idx in retrieved_indices]
-                    highlighted_indices = retrieved_indices + [query_index, response_index]
+                    retrieved_indices_int = [int(idx) for idx in retrieved_indices]
+                    highlighted_indices = retrieved_indices_int + [query_index, response_index]
                     fig = plot_tsne(
                         embeddings,
                         highlighted_indices,
