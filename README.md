@@ -1,6 +1,6 @@
 # Explainable RAG System
 
-[Streamlit App](https://interpretable-rag.streamlit.app/)
+[Streamlit App](https://tamannakumavat-explainable-rag-app-3kkuqs.streamlit.app/)
 
 A simple, explainable Retrieval-Augmented Generation (RAG) tool that helps you understand how document chunks influence the generated response using t-SNE visualizations and adjustable chunking strategies.
 
