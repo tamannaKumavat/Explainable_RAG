@@ -39,6 +39,8 @@ A simple, explainable Retrieval-Augmented Generation (RAG) tool that helps you u
 5. Use the t-SNE plot to interpret embedding relationships.
 
 ---
+## Reference
+https://medium.com/@alb.formaggio/build-your-rag-web-application-with-streamlit-7673120a9741
 
 ## Installation
 
