@@ -49,6 +49,6 @@ A simple, explainable Retrieval-Augmented Generation (RAG) tool that helps you u
 ### Setup
 
 ```bash
-git clone https://github.com/your-username/Interpretable-RAG.git
-cd Interpretable-RAG
+git clone https://github.com/tamannaKumavat/Explainable_RAG.git
+cd Explainable_RAG
 pip install -r requirements.txt
